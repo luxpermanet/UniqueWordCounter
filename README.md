@@ -9,3 +9,7 @@ filePath: This is your input file
 encoding: Input file's encoding  
 fileReadParallelism: Determines how many threads can read from your file at a time  
 lineProcessParallelism: Determines how many threads can process the lines from the file at a time
+
+Missing parts in the project:  
+- Decorate methods and classes with comments to explain what they do
+- Create a CLI executable
