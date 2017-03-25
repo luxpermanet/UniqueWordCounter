@@ -4,6 +4,9 @@ using System.Text;
 
 namespace UniqueWordCounter
 {
+    /// <summary>
+    /// Class responsible for word itself and its features such as line number, line position and occurrence count
+    /// </summary>
     public class Word
     {
         public string Content { set; get; }

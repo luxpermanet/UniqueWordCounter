@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace UniqueWordCounter
 {
+    /// <summary>
+    /// Class responsible for counting words in a text file
+    /// </summary>
     public class WordCounter
     {
         private static readonly Regex WordRegex = new Regex(@"\w+", RegexOptions.Compiled);
@@ -21,6 +24,13 @@ namespace UniqueWordCounter
         private ParallelOptions parallelOptions = null;
         private long executionMillis = 0;
 
+        /// <summary>
+        /// Instantiates class with the parameters
+        /// </summary>
+        /// <param name="filePath">file path to be tested</param>
+        /// <param name="fileEncoding">encoding of the file</param>
+        /// <param name="fileReadParallelism">number of max threads to read the file</param>
+        /// <param name="lineProcessParallelism">number of max threads to process the read lines</param>
         public WordCounter(string filePath, Encoding fileEncoding, int fileReadParallelism, int lineProcessParallelism)
         {
             this.filePath = filePath;
@@ -29,6 +39,9 @@ namespace UniqueWordCounter
             parallelOptions = new ParallelOptions() { MaxDegreeOfParallelism = lineProcessParallelism };
         }
 
+        /// <summary>
+        /// Runs the word counter by discarding the word positions (line number, line position)
+        /// </summary>
         public void Run()
         {
             chrono.Start();
@@ -52,6 +65,9 @@ namespace UniqueWordCounter
             executionMillis = chrono.ElapsedMilliseconds;
         }
 
+        /// <summary>
+        /// Runs the word counter by taking word positions into account (line number, line position)
+        /// </summary>
         public void RunVerbose()
         {
             chrono.Start();
@@ -67,6 +83,12 @@ namespace UniqueWordCounter
             executionMillis = chrono.ElapsedMilliseconds;
         }
 
+        /// <summary>
+        /// Reads one line from file at a time
+        /// </summary>
+        /// <param name="filePath">file path to read lines</param>
+        /// <param name="fileEncoding">encoding of the file provided</param>
+        /// <returns></returns>
         private IEnumerable<Tuple<string, int>> GenerateLines(string filePath, Encoding fileEncoding)
         {
             string line = null;
@@ -77,11 +99,19 @@ namespace UniqueWordCounter
                     yield return Tuple.Create(line, lineNumber++);
         }
 
+        /// <summary>
+        /// Returns words and their occurrences as dictionary
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, Word> ReportRaw()
         {
             return wordStore.GetWords();
         }
 
+        /// <summary>
+        /// Reports words and their occurrences as text
+        /// </summary>
+        /// <returns></returns>
         public string ReportText()
         {
             StringBuilder report = new StringBuilder();
