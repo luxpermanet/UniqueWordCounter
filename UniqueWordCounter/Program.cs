@@ -20,6 +20,11 @@ namespace UniqueWordCounter
             var fileReadParallelism = 1;
             var lineProcessParallelism = 1;
 
+            var filePathProvided = false;
+            var encodingProvided = false;
+            var fileReadParallelismProvided = false;
+            var lineProcessParallelismProvided = false;
+
             // arg is in /key:value or /key:"value" form
             foreach (var arg in args)
             {
@@ -29,16 +34,40 @@ namespace UniqueWordCounter
 
                 switch (key.ToUpperInvariant())
                 {
-                    case "FILEPATH": filePath = val; break;
-                    case "ENCODING": encoding = GetEncoding(val); break;
-                    case "FILEREADPARALLELISM": fileReadParallelism = int.Parse(val); break;
-                    case "LINEPROCESSPARALLELISM": lineProcessParallelism = int.Parse(val); break;
+                    case "FILEPATH": filePath = val; filePathProvided = true; break;
+                    case "ENCODING": encoding = GetEncoding(val); encodingProvided = true; break;
+                    case "FILEREADPARALLELISM": fileReadParallelism = int.Parse(val); fileReadParallelismProvided = true; break;
+                    case "LINEPROCESSPARALLELISM": lineProcessParallelism = int.Parse(val); lineProcessParallelismProvided = true; break;
                 }
             }
 
+            if (!filePathProvided)
+            {
+                Console.WriteLine("Usage:");
+                Console.WriteLine("UniqueWordCounter /filePath:\"FilePath\" /encoding:utf-8 /fileReadParallelism:5 /lineProcessParallelism:10");
+                Console.WriteLine("Parameters:");
+                Console.WriteLine("filePath: file path of the test file");
+                Console.WriteLine("encoding: encoding of the file provided");
+                Console.WriteLine("fileReadParallelism: number of max threads to read the file");
+                Console.WriteLine("lineProcessParallelism: number of max threads to process the read lines");
+
+                return;
+            }
+
             var wordCounter = new WordCounter(filePath, encoding, fileReadParallelism, lineProcessParallelism);
-            wordCounter.RunVerbose();
-            //wordCounter.Run();
+     
+            try
+            {
+                wordCounter.RunVerbose();
+                //wordCounter.Run();
+            }
+            catch (AggregateException ae)
+            {
+                foreach (var ex in ae.InnerExceptions)
+                    Console.WriteLine(ex.Message);
+
+                throw;
+            }
 
             Console.Write(wordCounter.ReportText());
             Console.ReadKey();

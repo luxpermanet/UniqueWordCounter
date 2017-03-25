@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -45,6 +46,8 @@ namespace UniqueWordCounter
         public void Run()
         {
             chrono.Start();
+
+            var exceptions = new ConcurrentQueue<Exception>();
             Parallel.ForEach(File.ReadLines(filePath, fileEncoding).AsParallel().WithDegreeOfParallelism(fileReadParallelism), parallelOptions, line =>
             {
                 // Slower
@@ -56,11 +59,19 @@ namespace UniqueWordCounter
                 ////    .ToList()
                 ////    .ForEach(x => wordStore.AddWord(x));
 
-                foreach (Match m in WordRegex.Matches(line))
+                try
                 {
-                    wordStore.AddWord(m.Value);
+                    foreach (Match m in WordRegex.Matches(line))
+                    {
+                        wordStore.AddWord(m.Value);
+                    }
                 }
+                catch (Exception e) { exceptions.Enqueue(e); }
             });
+
+            if (exceptions.Count > 0)
+                throw new AggregateException(exceptions);
+
             chrono.Stop();
             executionMillis = chrono.ElapsedMilliseconds;
         }
@@ -71,14 +82,24 @@ namespace UniqueWordCounter
         public void RunVerbose()
         {
             chrono.Start();
+
+            var exceptions = new ConcurrentQueue<Exception>();
             Parallel.ForEach(GenerateLines(filePath, fileEncoding).AsParallel().WithDegreeOfParallelism(fileReadParallelism), parallelOptions, pair =>
             {
-                int linePos = 1;
-                foreach (Match m in WordRegex.Matches(pair.Item1))
+                try
                 {
-                    wordStore.AddWord(m.Value, pair.Item2, linePos++, 1);
+                    int linePos = 1;
+                    foreach (Match m in WordRegex.Matches(pair.Item1))
+                    {
+                        wordStore.AddWord(m.Value, pair.Item2, linePos++, 1);
+                    }
                 }
+                catch (Exception e) { exceptions.Enqueue(e); }
             });
+
+            if (exceptions.Count > 0)
+                throw new AggregateException(exceptions);
+
             chrono.Stop();
             executionMillis = chrono.ElapsedMilliseconds;
         }
