@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "UniqueWordCounter": {
+      "commandName": "Project",
+      "commandLineArgs": "/filePath:\"C:\\Users\\egokten\\Desktop\\Foo\\TestFileSmall.txt\""
+    }
+  }
+}

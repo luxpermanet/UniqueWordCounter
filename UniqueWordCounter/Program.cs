@@ -11,7 +11,7 @@ namespace UniqueWordCounter
 {
     class Program
     {
-        private static Regex KeyValRegex = new Regex("/(?<key>\\S*):(?<val>\"{1}[\\s\\S]*\"{1}|\\S*)", RegexOptions.Compiled);
+        private static Regex KeyValRegex = new Regex("/(?<key>\\S*?):(?<val>\"{1}[\\s\\S]*\"{1}|\\S*)", RegexOptions.Compiled);
 
         static void Main(string[] args)
         {

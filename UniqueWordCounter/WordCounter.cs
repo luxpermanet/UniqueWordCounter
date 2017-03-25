@@ -139,7 +139,7 @@ namespace UniqueWordCounter
             report.AppendLine("Word occurrences");
             report.AppendLine();
             report.AppendLine(wordStore.ToString());
-            report.AppendLine($"Elapsed seconds: {executionMillis / 1000} ms.");
+            report.AppendLine($"Elapsed seconds: {executionMillis / 1000} seconds");
 
             return report.ToString();
         }
