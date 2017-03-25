@@ -20,11 +20,6 @@ namespace UniqueWordCounter
             var fileReadParallelism = 1;
             var lineProcessParallelism = 1;
 
-            var filePathProvided = false;
-            var encodingProvided = false;
-            var fileReadParallelismProvided = false;
-            var lineProcessParallelismProvided = false;
-
             // arg is in /key:value or /key:"value" form
             foreach (var arg in args)
             {
@@ -32,16 +27,19 @@ namespace UniqueWordCounter
                 var key = m.Groups["key"].Value;
                 var val = m.Groups["val"].Value;
 
-                switch (key.ToUpperInvariant())
+                if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(val))
                 {
-                    case "FILEPATH": filePath = val; filePathProvided = true; break;
-                    case "ENCODING": encoding = GetEncoding(val); encodingProvided = true; break;
-                    case "FILEREADPARALLELISM": fileReadParallelism = int.Parse(val); fileReadParallelismProvided = true; break;
-                    case "LINEPROCESSPARALLELISM": lineProcessParallelism = int.Parse(val); lineProcessParallelismProvided = true; break;
+                    switch (key.ToUpperInvariant())
+                    {
+                        case "FILEPATH": filePath = val; break;
+                        case "ENCODING": encoding = GetEncoding(val); break;
+                        case "FILEREADPARALLELISM": fileReadParallelism = int.Parse(val); break;
+                        case "LINEPROCESSPARALLELISM": lineProcessParallelism = int.Parse(val); break;
+                    }
                 }
             }
 
-            if (!filePathProvided)
+            if (string.IsNullOrWhiteSpace(filePath))
             {
                 Console.WriteLine("Usage:");
                 Console.WriteLine("UniqueWordCounter /filePath:\"FilePath\" /encoding:utf-8 /fileReadParallelism:5 /lineProcessParallelism:10");
